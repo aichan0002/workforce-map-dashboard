@@ -44,8 +44,8 @@ function MapLegend({ toggles }: MapLegendProps) {
             </span>
             <span className="sample-values">
               <span className="sample-value-authorized">{"\u7de8\u5236\u6578:110"}</span>
-              <span className="sample-value-active">{"\u5728\u71df\u6578:30"}</span>
               <span className="sample-value-actual">{"\u73fe\u54e1\u6578:65"}</span>
+              <span className="sample-value-active">{"\u5728\u71df\u6578:30"}</span>
             </span>
           </div>
           <p className="legend-note">{text.capacityNote}</p>
