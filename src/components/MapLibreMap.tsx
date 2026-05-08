@@ -11,6 +11,8 @@ type MapLibreMapProps = {
   toggles: LayerToggleState;
 };
 
+const dataUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 function setLayerVisibility(map: Map, layerId: string, visible: boolean) {
   if (!map.getLayer(layerId)) return;
   map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
@@ -20,7 +22,7 @@ function addSourcesAndLayers(map: Map) {
   if (!map.getSource(UNIT_SOURCE_ID)) {
     map.addSource(UNIT_SOURCE_ID, {
       type: "geojson",
-      data: "/data/units.geojson",
+      data: dataUrl("data/units.geojson"),
       cluster: true,
       clusterMaxZoom: 10,
       clusterRadius: 50,
@@ -30,7 +32,7 @@ function addSourcesAndLayers(map: Map) {
   if (!map.getSource(CITY_SOURCE_ID)) {
     map.addSource(CITY_SOURCE_ID, {
       type: "geojson",
-      data: "/data/taiwan-cities.geojson",
+      data: dataUrl("data/taiwan-cities.geojson"),
     });
   }
 
