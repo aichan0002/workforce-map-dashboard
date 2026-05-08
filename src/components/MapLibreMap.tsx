@@ -3,7 +3,12 @@ import maplibregl, { Map } from "maplibre-gl";
 import { CITY_SOURCE_ID, LAYER_IDS, UNIT_SOURCE_ID } from "../config/layers";
 import { MAP_STYLE_URL, TAIWAN_VIEW } from "../config/mapStyle";
 import type { LayerToggleState } from "../types/geo";
-import { manningColorExpression, pointRadiusExpression } from "../utils/mapExpressions";
+import {
+  activeRadiusExpression,
+  actualRadiusExpression,
+  authorizedRadiusExpression,
+  manningColorExpression,
+} from "../utils/mapExpressions";
 import { attachMapEvents } from "../hooks/useMapEvents";
 import ResetViewButton from "./ResetViewButton";
 
@@ -161,6 +166,50 @@ function addSourcesAndLayers(map: Map) {
     });
   }
 
+  if (!map.getLayer(LAYER_IDS.unitCapacity)) {
+    map.addLayer({
+      id: LAYER_IDS.unitCapacity,
+      type: "circle",
+      source: UNIT_SOURCE_ID,
+      filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-color": "#06233f",
+        "circle-radius": authorizedRadiusExpression,
+        "circle-opacity": 0.9,
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "rgba(255,255,255,0.92)",
+      },
+    });
+  }
+
+  if (!map.getLayer(LAYER_IDS.unitActual)) {
+    map.addLayer({
+      id: LAYER_IDS.unitActual,
+      type: "circle",
+      source: UNIT_SOURCE_ID,
+      filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-color": "#2f80ed",
+        "circle-radius": actualRadiusExpression,
+        "circle-opacity": 0.9,
+      },
+    });
+  }
+
+  if (!map.getLayer(LAYER_IDS.unitActive)) {
+    map.addLayer({
+      id: LAYER_IDS.unitActive,
+      type: "circle",
+      source: UNIT_SOURCE_ID,
+      filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-color": "#14b8a6",
+        "circle-radius": activeRadiusExpression,
+        "circle-opacity": 0.92,
+      },
+    });
+  }
+
   if (!map.getLayer(LAYER_IDS.unitPoints)) {
     map.addLayer({
       id: LAYER_IDS.unitPoints,
@@ -168,11 +217,25 @@ function addSourcesAndLayers(map: Map) {
       source: UNIT_SOURCE_ID,
       filter: ["!", ["has", "point_count"]],
       paint: {
-        "circle-color": manningColorExpression,
-        "circle-radius": pointRadiusExpression,
-        "circle-opacity": 0.96,
-        "circle-stroke-width": 1.5,
-        "circle-stroke-color": "rgba(6,35,63,0.42)",
+        "circle-color": "#ffffff",
+        "circle-radius": ["+", authorizedRadiusExpression, 4],
+        "circle-opacity": 0,
+        "circle-stroke-width": 0,
+      },
+    });
+  }
+
+  if (!map.getLayer(LAYER_IDS.manningRing)) {
+    map.addLayer({
+      id: LAYER_IDS.manningRing,
+      type: "circle",
+      source: UNIT_SOURCE_ID,
+      filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-color": "rgba(255,255,255,0)",
+        "circle-radius": ["+", authorizedRadiusExpression, 3],
+        "circle-stroke-width": 4,
+        "circle-stroke-color": manningColorExpression,
       },
     });
   }
@@ -184,7 +247,7 @@ function addSourcesAndLayers(map: Map) {
       source: UNIT_SOURCE_ID,
       filter: ["all", ["!", ["has", "point_count"]], ["==", ["get", "riskLevel"], "high"]],
       layout: {
-        "text-field": "▲",
+        "text-field": "\u25b2",
         "text-size": ["interpolate", ["linear"], ["zoom"], 5.5, 13, 8.5, 18],
         "text-offset": [0, -1.25],
         "text-anchor": "bottom",
@@ -226,29 +289,22 @@ function applyLayerState(map: Map, toggles: LayerToggleState) {
   const showPoints = toggles.points;
   const showHeatmap = toggles.heatmap;
   const showIndividualPoints = showPoints && (!showHeatmap || !showClusters);
+  const showCapacity = showIndividualPoints && toggles.authorizedStrength;
+  const showActual = showIndividualPoints && toggles.actualStrength;
+  const showActive = showIndividualPoints && toggles.activePersonnel;
 
   setLayerVisibility(map, LAYER_IDS.clusters, showClusters);
   setLayerVisibility(map, LAYER_IDS.clusterCount, showClusters);
   setLayerVisibility(map, LAYER_IDS.heatmapManning, showHeatmap && toggles.manningRate);
   setLayerVisibility(map, LAYER_IDS.heatmapRecruitment, showHeatmap && toggles.recruitmentStageRate);
   setLayerVisibility(map, LAYER_IDS.cityBoundaries, toggles.boundaries);
+  setLayerVisibility(map, LAYER_IDS.unitCapacity, showCapacity);
+  setLayerVisibility(map, LAYER_IDS.unitActual, showActual);
+  setLayerVisibility(map, LAYER_IDS.unitActive, showActive);
   setLayerVisibility(map, LAYER_IDS.unitPoints, showIndividualPoints);
+  setLayerVisibility(map, LAYER_IDS.manningRing, showIndividualPoints && toggles.manningRate);
   setLayerVisibility(map, LAYER_IDS.riskHighlight, showIndividualPoints && toggles.manningRate);
   setLayerVisibility(map, LAYER_IDS.unitLabels, showIndividualPoints);
-
-  if (map.getLayer(LAYER_IDS.unitPoints)) {
-    map.setPaintProperty(LAYER_IDS.unitPoints, "circle-opacity", showHeatmap ? 0.7 : 0.96);
-    map.setPaintProperty(
-      LAYER_IDS.unitPoints,
-      "circle-radius",
-      toggles.actualStrength ? pointRadiusExpression : 13,
-    );
-    map.setPaintProperty(
-      LAYER_IDS.unitPoints,
-      "circle-color",
-      toggles.manningRate ? manningColorExpression : "#0088ff",
-    );
-  }
 }
 
 function MapLibreMap({ toggles }: MapLibreMapProps) {

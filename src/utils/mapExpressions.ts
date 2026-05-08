@@ -11,10 +11,10 @@ export const manningColorExpression: ExpressionSpecification = [
   "#e60012",
 ];
 
-export const pointRadiusExpression: ExpressionSpecification = [
+export const authorizedRadiusExpression: ExpressionSpecification = [
   "interpolate",
   ["linear"],
-  ["coalesce", ["get", "actualStrength"], 0],
+  ["coalesce", ["get", "authorizedStrength"], 0],
   0,
   8,
   500,
@@ -23,4 +23,32 @@ export const pointRadiusExpression: ExpressionSpecification = [
   19,
   3000,
   30,
+];
+
+export const actualRadiusExpression: ExpressionSpecification = [
+  "interpolate",
+  ["linear"],
+  ["coalesce", ["get", "actualStrength"], 0],
+  0,
+  5,
+  500,
+  10,
+  1000,
+  16,
+  3000,
+  27,
+];
+
+export const activeRadiusExpression: ExpressionSpecification = [
+  "interpolate",
+  ["linear"],
+  ["coalesce", ["get", "activePersonnel"], 0],
+  0,
+  3,
+  500,
+  7,
+  1000,
+  12,
+  3000,
+  22,
 ];
