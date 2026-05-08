@@ -171,8 +171,8 @@ function addSourcesAndLayers(map: Map) {
         "circle-color": manningColorExpression,
         "circle-radius": pointRadiusExpression,
         "circle-opacity": 0.96,
-        "circle-stroke-width": 3,
-        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 1.5,
+        "circle-stroke-color": "rgba(6,35,63,0.42)",
       },
     });
   }
@@ -180,15 +180,20 @@ function addSourcesAndLayers(map: Map) {
   if (!map.getLayer(LAYER_IDS.riskHighlight)) {
     map.addLayer({
       id: LAYER_IDS.riskHighlight,
-      type: "circle",
+      type: "symbol",
       source: UNIT_SOURCE_ID,
       filter: ["all", ["!", ["has", "point_count"]], ["==", ["get", "riskLevel"], "high"]],
+      layout: {
+        "text-field": "▲",
+        "text-size": ["interpolate", ["linear"], ["zoom"], 5.5, 13, 8.5, 18],
+        "text-offset": [0, -1.25],
+        "text-anchor": "bottom",
+        "text-allow-overlap": false,
+      },
       paint: {
-        "circle-radius": ["+", pointRadiusExpression, 10],
-        "circle-color": "rgba(220,38,38,0)",
-        "circle-stroke-color": "#dc2626",
-        "circle-stroke-width": 3,
-        "circle-stroke-opacity": 0.95,
+        "text-color": "#e60012",
+        "text-halo-color": "rgba(255,255,255,0.98)",
+        "text-halo-width": 1.4,
       },
     });
   }
@@ -220,18 +225,19 @@ function applyLayerState(map: Map, toggles: LayerToggleState) {
   const showClusters = toggles.clustering;
   const showPoints = toggles.points;
   const showHeatmap = toggles.heatmap;
+  const showIndividualPoints = showPoints && (!showHeatmap || !showClusters);
 
   setLayerVisibility(map, LAYER_IDS.clusters, showClusters);
   setLayerVisibility(map, LAYER_IDS.clusterCount, showClusters);
   setLayerVisibility(map, LAYER_IDS.heatmapManning, showHeatmap && toggles.manningRate);
   setLayerVisibility(map, LAYER_IDS.heatmapRecruitment, showHeatmap && toggles.recruitmentStageRate);
   setLayerVisibility(map, LAYER_IDS.cityBoundaries, toggles.boundaries);
-  setLayerVisibility(map, LAYER_IDS.unitPoints, showPoints);
-  setLayerVisibility(map, LAYER_IDS.riskHighlight, showPoints && toggles.manningRate);
-  setLayerVisibility(map, LAYER_IDS.unitLabels, showPoints);
+  setLayerVisibility(map, LAYER_IDS.unitPoints, showIndividualPoints);
+  setLayerVisibility(map, LAYER_IDS.riskHighlight, showIndividualPoints && toggles.manningRate);
+  setLayerVisibility(map, LAYER_IDS.unitLabels, showIndividualPoints);
 
   if (map.getLayer(LAYER_IDS.unitPoints)) {
-    map.setPaintProperty(LAYER_IDS.unitPoints, "circle-opacity", showHeatmap ? 0.62 : 0.96);
+    map.setPaintProperty(LAYER_IDS.unitPoints, "circle-opacity", showHeatmap ? 0.7 : 0.96);
     map.setPaintProperty(
       LAYER_IDS.unitPoints,
       "circle-radius",

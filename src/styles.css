@@ -357,6 +357,23 @@ input {
   flex: 0 0 auto;
 }
 
+.legend-note {
+  margin: 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.risk-symbol {
+  width: 17px;
+  color: #e60012;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
 .line-sample {
   height: 0 !important;
   border-top: 3px dashed #06233f;
