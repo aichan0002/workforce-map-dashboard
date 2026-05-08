@@ -11,7 +11,6 @@ export const metricGroups: Array<{ title: string; items: ToggleDefinition[] }> =
   {
     title: "\u4eba\u529b\u6307\u6a19",
     items: [
-      { key: "authorizedStrength", label: "\u7de8\u5236\u6578", description: "\u986f\u793a\u7de8\u5236\u5bb9\u91cf 100% \u5916\u5708" },
       { key: "actualStrength", label: "\u73fe\u54e1\u6578", description: "\u4ee5\u85cd\u8272\u6c34\u4f4d\u8868\u73fe\u73fe\u54e1\u6bd4\u4f8b" },
       { key: "activePersonnel", label: "\u5728\u71df\u4eba\u6578", description: "\u4ee5\u6df1\u85cd\u7da0\u6c34\u4f4d\u8868\u73fe\u5728\u71df\u6bd4\u4f8b" },
       { key: "manningRate", label: "\u7de8\u73fe\u6bd4", description: "\u4ee5\u5916\u6846\u8272\u968e\u8868\u73fe\u9054\u6210\u6bd4\u4f8b" },
