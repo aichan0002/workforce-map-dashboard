@@ -25,8 +25,6 @@ const text = {
   heatHigh: "\u9ad8",
   heatNote:
     "\u71b1\u5340\u8207\u7fa4\u805a\u540c\u6642\u958b\u555f\u6642\uff0c\u500b\u5225\u9ede\u4f4d\u6703\u6536\u8d77\u4ee5\u964d\u4f4e\u91cd\u758a\u3002",
-  boundaryTitle: "\u884c\u653f\u5340\u908a\u754c",
-  boundary: "\u5c55\u793a\u7528\u7e23\u5e02\u7bc4\u570d",
 };
 
 function MapLegend({ toggles }: MapLegendProps) {
@@ -86,12 +84,6 @@ function MapLegend({ toggles }: MapLegendProps) {
         </section>
       )}
 
-      {toggles.boundaries && (
-        <section>
-          <h3>{text.boundaryTitle}</h3>
-          <div className="legend-row"><i className="line-sample" />{text.boundary}</div>
-        </section>
-      )}
     </div>
   );
 }

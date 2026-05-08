@@ -80,8 +80,6 @@ function unitPopupHtml(properties: UnitFeature["properties"]) {
         <dt>在營人數</dt><dd>${numberFormat.format(properties.activePersonnel)}</dd>
         <dt>現員數</dt><dd>${numberFormat.format(properties.actualStrength)}</dd>
         <dt>編現比</dt><dd>${percent(properties.manningRate)}</dd>
-        <dt>持證比</dt><dd>${percent(properties.certificationRate)}</dd>
-        <dt>招募達成率</dt><dd>${percent(properties.recruitmentStageRate)}</dd>
       </dl>
       <p class="popup-note">資料日期：${properties.updatedAt}</p>
     </div>
@@ -414,8 +412,8 @@ function applyLayerState(map: Map, toggles: LayerToggleState) {
   setLayerVisibility(map, LAYER_IDS.clusters, showClusters && !showIndividualPoints);
   setLayerVisibility(map, LAYER_IDS.clusterCount, showClusters && !showIndividualPoints);
   setLayerVisibility(map, LAYER_IDS.heatmapManning, showHeatmap && toggles.manningRate);
-  setLayerVisibility(map, LAYER_IDS.heatmapRecruitment, showHeatmap && toggles.recruitmentStageRate);
-  setLayerVisibility(map, LAYER_IDS.cityBoundaries, toggles.boundaries);
+  setLayerVisibility(map, LAYER_IDS.heatmapRecruitment, false);
+  setLayerVisibility(map, LAYER_IDS.cityBoundaries, false);
   setLayerVisibility(map, LAYER_IDS.unitCapacity, false);
   setLayerVisibility(map, LAYER_IDS.unitActual, false);
   setLayerVisibility(map, LAYER_IDS.unitActive, false);

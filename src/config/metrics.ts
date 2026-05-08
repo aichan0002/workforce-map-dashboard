@@ -9,28 +9,20 @@ export type ToggleDefinition = {
 
 export const metricGroups: Array<{ title: string; items: ToggleDefinition[] }> = [
   {
-    title: "人力指標",
+    title: "\u4eba\u529b\u6307\u6a19",
     items: [
-      { key: "authorizedStrength", label: "編制數", description: "於提示資訊顯示編制量級" },
-      { key: "actualStrength", label: "現員數", description: "於點位大小與提示資訊顯示現員數" },
-      { key: "manningRate", label: "編現比", description: "以分級顏色呈現達成比例" },
-      { key: "activePersonnel", label: "在營人數", description: "於提示資訊顯示在營人數" },
+      { key: "authorizedStrength", label: "\u7de8\u5236\u6578", description: "\u986f\u793a\u7de8\u5236\u5bb9\u91cf 100% \u5916\u5708" },
+      { key: "actualStrength", label: "\u73fe\u54e1\u6578", description: "\u4ee5\u85cd\u8272\u6c34\u4f4d\u8868\u73fe\u73fe\u54e1\u6bd4\u4f8b" },
+      { key: "activePersonnel", label: "\u5728\u71df\u4eba\u6578", description: "\u4ee5\u6df1\u85cd\u7da0\u6c34\u4f4d\u8868\u73fe\u5728\u71df\u6bd4\u4f8b" },
+      { key: "manningRate", label: "\u7de8\u73fe\u6bd4", description: "\u4ee5\u5916\u6846\u8272\u968e\u8868\u73fe\u9054\u6210\u6bd4\u4f8b" },
     ],
   },
   {
-    title: "能力指標",
+    title: "\u8996\u89ba\u6a21\u5f0f",
     items: [
-      { key: "certificationRate", label: "特定能力持證比", description: "於提示資訊顯示能力資格比例" },
-      { key: "recruitmentStageRate", label: "招募階段達成率", description: "可作為熱區權重參考" },
-    ],
-  },
-  {
-    title: "視覺模式",
-    items: [
-      { key: "points", label: "點位", description: "顯示匿名單位點位" },
-      { key: "clustering", label: "群聚", description: "縮小時合併點位" },
-      { key: "heatmap", label: "熱區", description: "顯示編現比與招募達成率熱區" },
-      { key: "boundaries", label: "行政區邊界", description: "顯示展示用縣市邊界" },
+      { key: "points", label: "\u9ede\u4f4d", description: "\u986f\u793a\u6c34\u4f4d\u5708\u9ede\u4f4d" },
+      { key: "clustering", label: "\u7fa4\u805a", description: "\u71b1\u5340\u958b\u555f\u6642\u6536\u5408\u9ede\u4f4d" },
+      { key: "heatmap", label: "\u71b1\u5340", description: "\u986f\u793a\u7de8\u73fe\u6bd4\u71b1\u5340" },
     ],
   },
 ];
@@ -40,8 +32,8 @@ export const defaultLayerToggles: LayerToggleState = {
   actualStrength: true,
   manningRate: true,
   activePersonnel: true,
-  certificationRate: true,
-  recruitmentStageRate: true,
+  certificationRate: false,
+  recruitmentStageRate: false,
   points: true,
   clustering: true,
   heatmap: false,
@@ -54,6 +46,6 @@ const labelByKey = new Map(
 
 export function getEnabledMetricLabels(toggles: LayerToggleState) {
   return (Object.keys(toggles) as ToggleKey[])
-    .filter((key) => toggles[key])
+    .filter((key) => toggles[key] && labelByKey.has(key))
     .map((key) => labelByKey.get(key) ?? key);
 }
