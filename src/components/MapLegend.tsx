@@ -23,7 +23,8 @@ const text = {
   heatTitle: "\u71b1\u5340",
   heatLow: "\u4f4e",
   heatHigh: "\u9ad8",
-  heatNote: "\u71b1\u5340\u8207\u7fa4\u805a\u540c\u6642\u958b\u555f\u6642\uff0c\u500b\u5225\u9ede\u4f4d\u6703\u6536\u8d77\u4ee5\u964d\u4f4e\u91cd\u758a\u3002",
+  heatNote:
+    "\u71b1\u5340\u8207\u7fa4\u805a\u540c\u6642\u958b\u555f\u6642\uff0c\u500b\u5225\u9ede\u4f4d\u6703\u6536\u8d77\u4ee5\u964d\u4f4e\u91cd\u758a\u3002",
   boundaryTitle: "\u884c\u653f\u5340\u908a\u754c",
   boundary: "\u5c55\u793a\u7528\u7e23\u5e02\u7bc4\u570d",
 };
@@ -42,9 +43,9 @@ function MapLegend({ toggles }: MapLegendProps) {
               <span className="sample-fill sample-fill-active" />
             </span>
             <span className="sample-values">
-              <span>編制數:110</span>
-              <span>在營數:30</span>
-              <span>現員數:65</span>
+              <span className="sample-value-authorized">{"\u7de8\u5236\u6578:110"}</span>
+              <span className="sample-value-active">{"\u5728\u71df\u6578:30"}</span>
+              <span className="sample-value-actual">{"\u73fe\u54e1\u6578:65"}</span>
             </span>
           </div>
           <p className="legend-note">{text.capacityNote}</p>

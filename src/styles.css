@@ -285,7 +285,7 @@ input {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.96);
   box-shadow:
-    0 0 0 3px var(--manning-ring),
+    0 0 0 5px var(--manning-ring),
     0 5px 13px rgba(15, 23, 42, 0.28);
 }
 
@@ -414,7 +414,7 @@ input {
 
 .ring-sample {
   background: transparent !important;
-  border: 4px solid;
+  border: 5px solid;
 }
 
 .legend-note {
@@ -441,7 +441,7 @@ input {
   border: 6px solid #06233f;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 0 3px #0088ff;
+  box-shadow: 0 0 0 5px #0088ff;
 }
 
 .sample-fill {
@@ -464,9 +464,20 @@ input {
 .sample-values {
   display: grid;
   gap: 2px;
-  color: #1f2933;
   font-size: 13px;
   font-weight: 800;
+}
+
+.sample-value-authorized {
+  color: #06233f;
+}
+
+.sample-value-actual {
+  color: #1fa4d0;
+}
+
+.sample-value-active {
+  color: #0d5669;
 }
 
 .risk-symbol {
