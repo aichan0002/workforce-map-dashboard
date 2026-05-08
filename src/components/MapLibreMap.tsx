@@ -62,14 +62,14 @@ function addSourcesAndLayers(map: Map) {
           0,
           "rgba(79,157,247,0)",
           0.35,
-          "rgba(79,157,247,0.55)",
+          "rgba(0,136,255,0.7)",
           0.7,
-          "rgba(245,158,11,0.72)",
+          "rgba(255,159,28,0.82)",
           1,
-          "rgba(220,38,38,0.86)",
+          "rgba(230,0,18,0.92)",
         ],
-        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 5, 22, 10, 44],
-        "heatmap-opacity": 0.76,
+        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 5, 30, 10, 56],
+        "heatmap-opacity": 0.86,
       },
       layout: { visibility: "none" },
     });
@@ -93,7 +93,7 @@ function addSourcesAndLayers(map: Map) {
           0.9,
           1,
         ],
-        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 5, 0.45, 10, 1.1],
+        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 5, 0.7, 10, 1.45],
         "heatmap-color": [
           "interpolate",
           ["linear"],
@@ -101,14 +101,14 @@ function addSourcesAndLayers(map: Map) {
           0,
           "rgba(15,76,129,0)",
           0.45,
-          "rgba(15,76,129,0.48)",
+          "rgba(0,79,159,0.64)",
           0.85,
-          "rgba(230,0,18,0.62)",
-          1,
           "rgba(230,0,18,0.78)",
+          1,
+          "rgba(230,0,18,0.9)",
         ],
-        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 5, 18, 10, 38],
-        "heatmap-opacity": 0.55,
+        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 5, 26, 10, 50],
+        "heatmap-opacity": 0.68,
       },
       layout: { visibility: "none" },
     });
@@ -121,8 +121,8 @@ function addSourcesAndLayers(map: Map) {
       source: CITY_SOURCE_ID,
       paint: {
         "line-color": "#06233f",
-        "line-width": ["interpolate", ["linear"], ["zoom"], 5, 0.8, 9, 1.8],
-        "line-opacity": 0.58,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.4, 9, 2.6],
+        "line-opacity": 0.78,
         "line-dasharray": [2, 2],
       },
       layout: { visibility: "none" },
@@ -136,10 +136,10 @@ function addSourcesAndLayers(map: Map) {
       source: UNIT_SOURCE_ID,
       filter: ["has", "point_count"],
       paint: {
-        "circle-color": ["step", ["get", "point_count"], "#4f9df7", 8, "#0f4c81", 18, "#06233f"],
-        "circle-radius": ["step", ["get", "point_count"], 18, 8, 24, 18, 31],
-        "circle-stroke-width": 3,
-        "circle-stroke-color": "rgba(255,255,255,0.9)",
+        "circle-color": ["step", ["get", "point_count"], "#0088ff", 8, "#004f9f", 18, "#06233f"],
+        "circle-radius": ["step", ["get", "point_count"], 24, 8, 31, 18, 40],
+        "circle-stroke-width": 4,
+        "circle-stroke-color": "rgba(255,255,255,0.96)",
       },
     });
   }
@@ -153,7 +153,7 @@ function addSourcesAndLayers(map: Map) {
       layout: {
         "text-field": ["get", "point_count_abbreviated"],
         "text-font": ["Noto Sans Regular"],
-        "text-size": 14,
+        "text-size": 17,
       },
       paint: {
         "text-color": "#ffffff",
@@ -170,8 +170,8 @@ function addSourcesAndLayers(map: Map) {
       paint: {
         "circle-color": manningColorExpression,
         "circle-radius": pointRadiusExpression,
-        "circle-opacity": 0.9,
-        "circle-stroke-width": 2,
+        "circle-opacity": 0.96,
+        "circle-stroke-width": 3,
         "circle-stroke-color": "#ffffff",
       },
     });
@@ -184,11 +184,11 @@ function addSourcesAndLayers(map: Map) {
       source: UNIT_SOURCE_ID,
       filter: ["all", ["!", ["has", "point_count"]], ["==", ["get", "riskLevel"], "high"]],
       paint: {
-        "circle-radius": ["+", pointRadiusExpression, 7],
+        "circle-radius": ["+", pointRadiusExpression, 10],
         "circle-color": "rgba(220,38,38,0)",
         "circle-stroke-color": "#dc2626",
-        "circle-stroke-width": 2,
-        "circle-stroke-opacity": 0.82,
+        "circle-stroke-width": 3,
+        "circle-stroke-opacity": 0.95,
       },
     });
   }
@@ -199,18 +199,18 @@ function addSourcesAndLayers(map: Map) {
       type: "symbol",
       source: UNIT_SOURCE_ID,
       filter: ["!", ["has", "point_count"]],
-      minzoom: 7.5,
+      minzoom: 6.75,
       layout: {
         "text-field": ["get", "unitName"],
-        "text-size": 12,
-        "text-offset": [0, 1.35],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 6.75, 12, 8.5, 14],
+        "text-offset": [0, 1.6],
         "text-anchor": "top",
         "text-allow-overlap": false,
       },
       paint: {
         "text-color": "#06233f",
-        "text-halo-color": "rgba(255,255,255,0.88)",
-        "text-halo-width": 1.2,
+        "text-halo-color": "rgba(255,255,255,0.96)",
+        "text-halo-width": 1.8,
       },
     });
   }
@@ -231,16 +231,16 @@ function applyLayerState(map: Map, toggles: LayerToggleState) {
   setLayerVisibility(map, LAYER_IDS.unitLabels, showPoints);
 
   if (map.getLayer(LAYER_IDS.unitPoints)) {
-    map.setPaintProperty(LAYER_IDS.unitPoints, "circle-opacity", showHeatmap ? 0.48 : 0.9);
+    map.setPaintProperty(LAYER_IDS.unitPoints, "circle-opacity", showHeatmap ? 0.62 : 0.96);
     map.setPaintProperty(
       LAYER_IDS.unitPoints,
       "circle-radius",
-      toggles.actualStrength ? pointRadiusExpression : 8,
+      toggles.actualStrength ? pointRadiusExpression : 13,
     );
     map.setPaintProperty(
       LAYER_IDS.unitPoints,
       "circle-color",
-      toggles.manningRate ? manningColorExpression : "#4f9df7",
+      toggles.manningRate ? manningColorExpression : "#0088ff",
     );
   }
 }
@@ -258,6 +258,7 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
       style: MAP_STYLE_URL,
       center: TAIWAN_VIEW.center,
       zoom: TAIWAN_VIEW.zoom,
+      minZoom: TAIWAN_VIEW.minZoom,
       maxBounds: TAIWAN_VIEW.maxBounds,
       attributionControl: false,
     });
@@ -270,6 +271,11 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
     map.on("load", () => {
       addSourcesAndLayers(map);
       applyLayerState(map, toggles);
+      map.fitBounds(TAIWAN_VIEW.fitBounds, {
+        padding: { top: 64, right: 72, bottom: 48, left: 72 },
+        duration: 0,
+        maxZoom: TAIWAN_VIEW.zoom,
+      });
       detachEvents = attachMapEvents(map);
       loadedRef.current = true;
     });
@@ -289,9 +295,9 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
   }, [toggles]);
 
   const resetView = () => {
-    mapRef.current?.easeTo({
-      center: TAIWAN_VIEW.center,
-      zoom: TAIWAN_VIEW.zoom,
+    mapRef.current?.fitBounds(TAIWAN_VIEW.fitBounds, {
+      padding: { top: 64, right: 72, bottom: 48, left: 72 },
+      maxZoom: TAIWAN_VIEW.zoom,
       bearing: 0,
       pitch: 0,
       duration: 750,
