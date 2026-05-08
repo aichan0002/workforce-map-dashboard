@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Neutral abstract shield">
+  <rect width="128" height="128" rx="18" fill="#06233f"/>
+  <path d="M64 18 98 32v28c0 24-13 42-34 52-21-10-34-28-34-52V32l34-14Z" fill="#0f4c81"/>
+  <circle cx="64" cy="54" r="13" fill="#4f9df7"/>
+  <path d="M40 82h48M46 92h36" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+</svg>
