@@ -18,6 +18,127 @@ type MapLibreMapProps = {
 
 const dataUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
+type UnitFeature = {
+  type: "Feature";
+  geometry: {
+    type: "Point";
+    coordinates: [number, number];
+  };
+  properties: {
+    unitName: string;
+    region: string;
+    city: string;
+    authorizedStrength: number;
+    actualStrength: number;
+    manningRate: number | null;
+    activePersonnel: number;
+    certificationRate: number | null;
+    recruitmentStageRate: number | null;
+    riskLevel: "low" | "medium" | "high";
+    updatedAt: string;
+  };
+};
+
+type UnitCollection = {
+  type: "FeatureCollection";
+  features: UnitFeature[];
+};
+
+function clampPercent(value: number) {
+  return Math.max(0, Math.min(100, value));
+}
+
+function markerSize(authorizedStrength: number) {
+  if (authorizedStrength >= 2200) return 58;
+  if (authorizedStrength >= 1500) return 50;
+  if (authorizedStrength >= 900) return 42;
+  return 34;
+}
+
+function ringColor(manningRate: number | null) {
+  if (manningRate === null) return "#64748b";
+  if (manningRate >= 0.9) return "#004f9f";
+  if (manningRate >= 0.8) return "#0088ff";
+  if (manningRate >= 0.7) return "#ff9f1c";
+  return "#e60012";
+}
+
+function unitPopupHtml(properties: UnitFeature["properties"]) {
+  const numberFormat = new Intl.NumberFormat("zh-TW");
+  const percentFormat = new Intl.NumberFormat("zh-TW", {
+    style: "percent",
+    maximumFractionDigits: 0,
+  });
+  const percent = (value: number | null) => (value === null ? "無法計算" : percentFormat.format(value));
+
+  return `
+    <div class="map-popup">
+      <strong>${properties.unitName}</strong>
+      <p>${properties.city}，${properties.region}</p>
+      <dl>
+        <dt>編制數</dt><dd>${numberFormat.format(properties.authorizedStrength)}</dd>
+        <dt>在營人數</dt><dd>${numberFormat.format(properties.activePersonnel)}</dd>
+        <dt>現員數</dt><dd>${numberFormat.format(properties.actualStrength)}</dd>
+        <dt>編現比</dt><dd>${percent(properties.manningRate)}</dd>
+        <dt>持證比</dt><dd>${percent(properties.certificationRate)}</dd>
+        <dt>招募達成率</dt><dd>${percent(properties.recruitmentStageRate)}</dd>
+      </dl>
+      <p class="popup-note">資料日期：${properties.updatedAt}</p>
+    </div>
+  `;
+}
+
+function createWaterMarker(feature: UnitFeature, map: Map) {
+  const element = document.createElement("button");
+  const props = feature.properties;
+  const authorized = Math.max(props.authorizedStrength, 1);
+  const actualPercent = clampPercent((props.actualStrength / authorized) * 100);
+  const activePercent = clampPercent((props.activePersonnel / authorized) * 100);
+  const size = markerSize(props.authorizedStrength);
+
+  element.type = "button";
+  element.className = "water-map-marker";
+  element.style.setProperty("--marker-size", `${size}px`);
+  element.style.setProperty("--actual-fill", `${actualPercent}%`);
+  element.style.setProperty("--active-fill", `${activePercent}%`);
+  element.style.setProperty("--manning-ring", ringColor(props.manningRate));
+  element.setAttribute("aria-label", props.unitName);
+  element.innerHTML = `
+    <span class="water-marker-circle">
+      <span class="water-fill water-fill-actual"></span>
+      <span class="water-fill water-fill-active"></span>
+    </span>
+  `;
+
+  const popup = new maplibregl.Popup({ offset: Math.round(size / 2) }).setHTML(unitPopupHtml(props));
+  element.addEventListener("mouseenter", () => {
+    popup.setLngLat(feature.geometry.coordinates).addTo(map);
+  });
+  element.addEventListener("mouseleave", () => popup.remove());
+  element.addEventListener("click", () => {
+    popup.setLngLat(feature.geometry.coordinates).addTo(map);
+  });
+
+  return element;
+}
+
+function updateWaterMarkerVisibility(
+  map: Map | null,
+  toggles: LayerToggleState,
+  elements: HTMLElement[],
+) {
+  const zoom = map?.getZoom() ?? 0;
+  void zoom;
+  const visible = toggles.points && (!toggles.heatmap || !toggles.clustering);
+
+  elements.forEach((element) => {
+    element.classList.toggle("is-hidden", !visible);
+    element.classList.toggle("hide-actual", !toggles.actualStrength);
+    element.classList.toggle("hide-active", !toggles.activePersonnel);
+    element.classList.toggle("hide-ring", !toggles.manningRate);
+  });
+}
+
 function setLayerVisibility(map: Map, layerId: string, visible: boolean) {
   if (!map.getLayer(layerId)) return;
   map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
@@ -289,21 +410,18 @@ function applyLayerState(map: Map, toggles: LayerToggleState) {
   const showPoints = toggles.points;
   const showHeatmap = toggles.heatmap;
   const showIndividualPoints = showPoints && (!showHeatmap || !showClusters);
-  const showCapacity = showIndividualPoints && toggles.authorizedStrength;
-  const showActual = showIndividualPoints && toggles.actualStrength;
-  const showActive = showIndividualPoints && toggles.activePersonnel;
 
-  setLayerVisibility(map, LAYER_IDS.clusters, showClusters);
-  setLayerVisibility(map, LAYER_IDS.clusterCount, showClusters);
+  setLayerVisibility(map, LAYER_IDS.clusters, showClusters && !showIndividualPoints);
+  setLayerVisibility(map, LAYER_IDS.clusterCount, showClusters && !showIndividualPoints);
   setLayerVisibility(map, LAYER_IDS.heatmapManning, showHeatmap && toggles.manningRate);
   setLayerVisibility(map, LAYER_IDS.heatmapRecruitment, showHeatmap && toggles.recruitmentStageRate);
   setLayerVisibility(map, LAYER_IDS.cityBoundaries, toggles.boundaries);
-  setLayerVisibility(map, LAYER_IDS.unitCapacity, showCapacity);
-  setLayerVisibility(map, LAYER_IDS.unitActual, showActual);
-  setLayerVisibility(map, LAYER_IDS.unitActive, showActive);
+  setLayerVisibility(map, LAYER_IDS.unitCapacity, false);
+  setLayerVisibility(map, LAYER_IDS.unitActual, false);
+  setLayerVisibility(map, LAYER_IDS.unitActive, false);
   setLayerVisibility(map, LAYER_IDS.unitPoints, showIndividualPoints);
-  setLayerVisibility(map, LAYER_IDS.manningRing, showIndividualPoints && toggles.manningRate);
-  setLayerVisibility(map, LAYER_IDS.riskHighlight, showIndividualPoints && toggles.manningRate);
+  setLayerVisibility(map, LAYER_IDS.manningRing, false);
+  setLayerVisibility(map, LAYER_IDS.riskHighlight, false);
   setLayerVisibility(map, LAYER_IDS.unitLabels, showIndividualPoints);
 }
 
@@ -311,6 +429,11 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
   const loadedRef = useRef(false);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const markerElementsRef = useRef<HTMLElement[]>([]);
+  const togglesRef = useRef(toggles);
+
+  togglesRef.current = toggles;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -330,6 +453,7 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
     mapRef.current = map;
 
     let detachEvents: (() => void) | undefined;
+    let detachMarkerZoom: (() => void) | undefined;
     map.on("load", () => {
       addSourcesAndLayers(map);
       applyLayerState(map, toggles);
@@ -340,10 +464,38 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
       });
       detachEvents = attachMapEvents(map);
       loadedRef.current = true;
+
+      fetch(dataUrl("data/units.geojson"))
+        .then((response) => response.json() as Promise<UnitCollection>)
+        .then((collection) => {
+          const markers = collection.features.map((feature) => {
+            const element = createWaterMarker(feature, map);
+            const marker = new maplibregl.Marker({ element, anchor: "center" })
+              .setLngLat(feature.geometry.coordinates)
+              .addTo(map);
+            return marker;
+          });
+          markersRef.current = markers;
+          markerElementsRef.current = markers.map((marker) => marker.getElement());
+          updateWaterMarkerVisibility(map, togglesRef.current, markerElementsRef.current);
+
+          const onZoom = () =>
+            updateWaterMarkerVisibility(map, togglesRef.current, markerElementsRef.current);
+          map.on("zoom", onZoom);
+          map.on("moveend", onZoom);
+          detachMarkerZoom = () => {
+            map.off("zoom", onZoom);
+            map.off("moveend", onZoom);
+          };
+        });
     });
 
     return () => {
       detachEvents?.();
+      detachMarkerZoom?.();
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
+      markerElementsRef.current = [];
       map.remove();
       mapRef.current = null;
       loadedRef.current = false;
@@ -354,6 +506,7 @@ function MapLibreMap({ toggles }: MapLibreMapProps) {
     const map = mapRef.current;
     if (!map || !loadedRef.current) return;
     applyLayerState(map, toggles);
+    updateWaterMarkerVisibility(map, toggles, markerElementsRef.current);
   }, [toggles]);
 
   const resetView = () => {

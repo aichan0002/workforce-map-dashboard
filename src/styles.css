@@ -261,6 +261,61 @@ input {
   inset: 0;
 }
 
+.water-map-marker {
+  width: var(--marker-size);
+  height: var(--marker-size);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translateZ(0);
+}
+
+.water-map-marker.is-hidden {
+  display: none;
+}
+
+.water-marker-circle {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 5px solid #06233f;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 0 0 3px var(--manning-ring),
+    0 5px 13px rgba(15, 23, 42, 0.28);
+}
+
+.water-map-marker.hide-ring .water-marker-circle {
+  box-shadow: 0 5px 13px rgba(15, 23, 42, 0.28);
+}
+
+.water-fill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+}
+
+.water-fill-actual {
+  height: var(--actual-fill);
+  background: #1fa4d0;
+}
+
+.water-fill-active {
+  height: var(--active-fill);
+  background: #0d5669;
+}
+
+.water-map-marker.hide-actual .water-fill-actual,
+.water-map-marker.hide-active .water-fill-active {
+  display: none;
+}
+
 .map-corner-label {
   position: absolute;
   left: 22px;
@@ -368,6 +423,50 @@ input {
   font-size: 13px;
   font-weight: 700;
   line-height: 1.45;
+}
+
+.water-marker-sample {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.sample-circle {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border: 6px solid #06233f;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px #0088ff;
+}
+
+.sample-fill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sample-fill-actual {
+  height: 59%;
+  background: #1fa4d0;
+}
+
+.sample-fill-active {
+  height: 27%;
+  background: #0d5669;
+}
+
+.sample-values {
+  display: grid;
+  gap: 2px;
+  color: #1f2933;
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .risk-symbol {

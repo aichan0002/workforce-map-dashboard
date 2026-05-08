@@ -36,6 +36,17 @@ function MapLegend({ toggles }: MapLegendProps) {
       {toggles.points && (
         <section>
           <h3>{text.capacityTitle}</h3>
+          <div className="water-marker-sample" aria-hidden="true">
+            <span className="sample-circle">
+              <span className="sample-fill sample-fill-actual" />
+              <span className="sample-fill sample-fill-active" />
+            </span>
+            <span className="sample-values">
+              <span>編制數:110</span>
+              <span>在營數:30</span>
+              <span>現員數:65</span>
+            </span>
+          </div>
           <p className="legend-note">{text.capacityNote}</p>
         </section>
       )}
